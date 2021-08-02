@@ -46,7 +46,7 @@ import org.apache.flink.runtime.util.ExecutorThreadFactory;
 import org.apache.flink.util.ExecutorUtils;
 
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +66,7 @@ public class SessionClient {
 	private final ExecutorService executor;
 	private volatile String sessionId;
 	private volatile boolean isClosed = false;
+	private final Map<String, String> properties;
 
 	public SessionClient(
 		String serverHost,
@@ -73,7 +74,8 @@ public class SessionClient {
 		String sessionName,
 		String planner,
 		String executionType,
-		String threadName)
+		String threadName,
+		Map<String, String> properties)
 		throws Exception {
 		this.serverHost = serverHost;
 		this.serverPort = serverPort;
@@ -82,6 +84,7 @@ public class SessionClient {
 		this.executionType = executionType;
 		this.executor = Executors.newFixedThreadPool(4, new ExecutorThreadFactory(threadName));
 		this.restClient = new RestClient(RestClientConfiguration.fromConfiguration(new Configuration()), executor);
+		this.properties = properties;
 
 		connectInternal();
 	}
@@ -104,7 +107,7 @@ public class SessionClient {
 			serverPort,
 			SessionCreateHeaders.getInstance(),
 			EmptyMessageParameters.getInstance(),
-			new SessionCreateRequestBody(sessionName, planner, executionType, Collections.emptyMap()))
+			new SessionCreateRequestBody(sessionName, planner, executionType, properties))
 			.get().getSessionId();
 	}
 

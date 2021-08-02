@@ -43,6 +43,7 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -402,6 +403,8 @@ public class FlinkConnection implements Connection {
 		String host;
 		int port;
 		String planner = null;
+		String executionType = "batch";
+		Map<String, String> properties = new HashMap<>();
 
 		int argumentStart = url.indexOf('?');
 		if (argumentStart < 0) {
@@ -431,8 +434,10 @@ public class FlinkConnection implements Connection {
 
 			if (key.equals("planner")) {
 				planner = value;
+			} else if (key.equals("execution_type")) {
+				executionType = value;
 			} else {
-				throw new IllegalArgumentException("Unknown url parameter key " + key);
+				properties.put(key, value);
 			}
 		}
 
@@ -440,12 +445,13 @@ public class FlinkConnection implements Connection {
 			throw new IllegalArgumentException(neededParams);
 		}
 
-		return new UrlInfo(host, port, planner);
+		return new UrlInfo(host, port, planner, executionType, properties);
 	}
 
 	private SessionClient createSession(String url) throws Exception {
 		UrlInfo urlInfo = parseUrl(url);
-		return new SessionClient(urlInfo.host, urlInfo.port, "Flink-JDBC", urlInfo.planner, "batch", "Flink-JDBC-Connection-IO");
+		return new SessionClient(urlInfo.host, urlInfo.port, "Flink-JDBC", urlInfo.planner,
+				urlInfo.executionType, "Flink-JDBC-Connection-IO", urlInfo.properties);
 	}
 
 	/**
@@ -455,11 +461,16 @@ public class FlinkConnection implements Connection {
 		final String host;
 		final int port;
 		final String planner;
+		final String executionType;
+		final Map<String, String> properties;
 
-		UrlInfo(String host, int port, String planner) {
+		UrlInfo(String host, int port, String planner, String executionType,
+				Map<String, String> properties) {
 			this.host = host;
 			this.port = port;
 			this.planner = planner;
+			this.executionType = executionType;
+			this.properties = properties;
 		}
 	}
 }
