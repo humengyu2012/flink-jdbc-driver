@@ -54,7 +54,10 @@ public class FlinkStatement implements Statement {
 		"SHOW_TABLES",
 		"SHOW_FUNCTIONS",
 		"DESCRIBE",
-		"EXPLAIN");
+		"EXPLAIN",
+		"SHOW_CREATE_CATALOG",
+		"SHOW_CREATE_DATABASE",
+		"SHOW_CREATE_TABLE");
 
 	private final SessionClient session;
 	private final FlinkConnection connection;
