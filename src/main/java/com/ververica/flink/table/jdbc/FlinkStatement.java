@@ -54,6 +54,7 @@ public class FlinkStatement implements Statement {
 		"SHOW_TABLES",
 		"SHOW_FUNCTIONS",
 		"DESCRIBE",
+		"DESCRIBE_TABLE",
 		"EXPLAIN",
 		"SHOW_CREATE_CATALOG",
 		"SHOW_CREATE_DATABASE",
