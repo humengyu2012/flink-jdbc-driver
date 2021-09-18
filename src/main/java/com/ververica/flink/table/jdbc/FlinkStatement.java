@@ -58,7 +58,8 @@ public class FlinkStatement implements Statement {
 		"EXPLAIN",
 		"SHOW_CREATE_CATALOG",
 		"SHOW_CREATE_DATABASE",
-		"SHOW_CREATE_TABLE");
+		"SHOW_CREATE_TABLE",
+		"SET");
 
 	private final SessionClient session;
 	private final FlinkConnection connection;
@@ -527,7 +528,7 @@ public class FlinkStatement implements Statement {
 					maxRows,
 					FlinkStatement.this);
 				currentResultSet.setFetchSize(fetchSize);
-				isQuery = QUERY_COMMANDS.contains(response.getStatementTypes().get(0));
+				isQuery = true;
 				return true;
 			} finally {
 				lock.writeLock().unlock();
